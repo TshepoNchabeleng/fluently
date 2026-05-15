@@ -1,0 +1,2 @@
+# fluently
+This a platform that allows communication between deaf people and people who don't understand sign language, or are blind. It lets the conversation flow naturally between the communicating parties without any loss of meaning because of how stale text conversation can become, the true meaning of a conversation lies withing facial expressions,, tone
