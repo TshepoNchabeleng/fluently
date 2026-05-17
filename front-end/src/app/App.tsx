@@ -24,7 +24,7 @@ export default function App() {
 
   useEffect(() => {
     // 1. Establish Secure Connection to your Render Instance Gateway
-    const RENDER_URL = "fluently-backend.onrender.com";
+    const RENDER_URL = "fluently-backend-dsft.onrender.com";
     const socket = new WebSocket(`wss://${RENDER_URL}/ws/communication-bridge`);
     socketRef.current = socket;
 
