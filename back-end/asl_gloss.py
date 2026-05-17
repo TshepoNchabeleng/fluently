@@ -1,19 +1,43 @@
-import requests
+import os
+from google import genai
+from google.genai import types
+from dotenv import load_dotenv
 
-VULTR_INFERENCE_URL = "https://api.vultrinference.com/v1/chat/completions"
+load_dotenv()
 
-def get_asl_structure(english_text):
+# We use Gemini Pro here because ASL grammar is complex.
+# Pro is much better at 'Reasoning' than the faster Flash model.
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+MODEL_ID = "gemini-2.5-pro"
+
+async def convert_to_asl_gloss(english_text: str):
     """
-    Uses a specialized open-source modle on vultr to convert
-    spoken english into ASL syntax
+    Takes plain English and converts it into ASL Gloss syntax 
+    to be performed by your AI Avatar.
     """
-    headers = {"Authorization": f"Bearer {os.getenv('VULTR_API_KEY')}"}
-    data = {
-        "model": "llama-3-70b-instruct", #hosted on Vultr Serverless
-        "messages": [
-            {"role": "system", "content": ":convert english to ASL Gloss syntax. Example: 'How are you?' -> 'YOU HOW?'"},
-            {"role": "user", "content": english_text}
-        ]
-    }
-    response = requests.post(VULTR_INFERENCE_URL, headers=headers, json=data)
-    return response.json()['choices'][0]['messsage']['content']
+    
+    prompt = f"""
+    Translate the following English sentence into ASL Gloss.
+    Rules:
+    1. Use ALL CAPS.
+    2. Use Topic-Comment structure (Object-Subject-Verb).
+    3. Include facial expression markers in brackets (e.g., [nodding], [eyebrows-up]).
+    4. Omit 'be' verbs (am, is, are, was, were).
+
+    English: "{english_text}"
+    ASL Gloss:
+    """
+
+    try:
+        response = await client.aio.models.generate_content(
+            model=MODEL_ID,
+            contents=prompt
+        )
+        
+        gloss_result = response.text.strip()
+        print(f"[Brain] English: {english_text} -> Gloss: {gloss_result}")
+        return gloss_result
+        
+    except Exception as e:
+        print(f"ASL Gloss Error: {e}")
+        return english_text.upper() # Fallback to simple caps
