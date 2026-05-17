@@ -1,5 +1,9 @@
-// Replace with your Vultr VM's IP address
-const socket = new WebSocket('ws://YOUR_VULTR_IP:8000/ws/communication-bridge');
+// your new secure Render URL
+const socket = new WebSocket('wss://fluently-backend.onrender.com/ws/communication-bridge');
+
+socket.onopen = () => {
+    console.log("Connected to the Fluently Bridge on Render!");
+};
 
 // 1. Sending Video Frames to Gemini
 function sendFrame(base64Image) {
